@@ -75,9 +75,10 @@
     // Lay that out as a map heading with a trophy row per placing, tint the
     // tile by its best placing, stop the scrolling-text fallback, give each
     // category its own icon and a gold/silver/bronze tally under the heading.
+    // High-round boards also badge 4th and 5th, with a medal instead of a trophy.
 
-    const medalPlaces = { '\u{1F947}': 1, '\u{1F948}': 2, '\u{1F949}': 3 };
-    const medalNames = ['Gold', 'Silver', 'Bronze'];
+    const medalPlaces = { '\u{1F947}': 1, '\u{1F948}': 2, '\u{1F949}': 3, '\u{1F396}': 4, '\u{1F3C5}': 5 };
+    const medalNames = ['Gold', 'Silver', 'Bronze', '4th place', '5th place'];
     const categoryIcons = {
         'Zombie Statistics': 'ph-skull',
         'Zombie Records': 'ph-trophy',
@@ -137,7 +138,7 @@
             line.dataset.place = String(row.place);
 
             const trophy = document.createElement('i');
-            trophy.className = 'ph-fill ph-trophy';
+            trophy.className = row.place <= 3 ? 'ph-fill ph-trophy' : 'ph-fill ph-medal';
             trophy.title = medalNames[row.place - 1];
             trophy.setAttribute('aria-label', medalNames[row.place - 1]);
 
@@ -172,11 +173,21 @@
 
     function tallyText(rows) {
         const counts = [0, 0, 0];
-        rows.forEach(row => { counts[row.place - 1]++; });
-        return counts
+        let topFive = 0;
+        rows.forEach(row => {
+            if (row.place <= 3) {
+                counts[row.place - 1]++;
+            } else {
+                topFive++;
+            }
+        });
+        const parts = counts
             .map((count, index) => count ? `${count} ${medalNames[index].toLowerCase()}` : '')
-            .filter(Boolean)
-            .join(' \u00b7 ');
+            .filter(Boolean);
+        if (topFive) {
+            parts.push(`${topFive} top 5`);
+        }
+        return parts.join(' \u00b7 ');
     }
 
     function enhanceBadgePanels() {
@@ -385,7 +396,7 @@
         });
     }
 
-    // ── Sidebar logo: the Shep mark instead of a plain "C" ───────────────────
+    // ── Sidebar logo: the CUK brand mark instead of a plain "C" ──────────────
 
     function brandLogo() {
         document.querySelectorAll('a[href="/"] > span:first-child').forEach(mark => {
@@ -394,7 +405,7 @@
             }
             mark.dataset.cukLogo = '1';
             const img = document.createElement('img');
-            img.src = `${statsSite}/shep-icon.png`;
+            img.src = '/brand/icon-512.png?v=20260927b';
             img.alt = '';
             mark.replaceChildren(img);
         });

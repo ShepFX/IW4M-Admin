@@ -79,6 +79,11 @@
     --cuk-medal: #cd8a4c;
 }
 
+.tooltip-wrapper[data-cuk-place="4"] .cuk-badge,
+.tooltip-wrapper[data-cuk-place="5"] .cuk-badge {
+    --cuk-medal: #7f93a8;
+}
+
 .cuk-badge .meta-value-text {
     display: block;
     white-space: normal;
@@ -115,6 +120,11 @@
 
 .cuk-row[data-place="3"] {
     --cuk-row: #cd8a4c;
+}
+
+.cuk-row[data-place="4"],
+.cuk-row[data-place="5"] {
+    --cuk-row: #7f93a8;
 }
 
 .cuk-row i {
@@ -225,4 +235,57 @@ table[data-cuk-zombies] tr > :nth-child(6) {
     width: 100%;
     height: 100%;
     object-fit: contain;
+}
+
+/* CUK colours: the brand lime (#b6ff00 = hsl(77 100% 50%)) taken from the
+   logo artwork, instead of the webfront's yellow palette. IW4MAdmin sets its
+   colour two ways - a named palette on <html data-primary-palette> and
+   hue/saturation/lightness values in <html style> - so both are overridden,
+   with every shade the palette defines.
+
+   The ramp is rebuilt around 50% lightness rather than the 62% the previous
+   acid sat at, so the mid shades stay evenly spaced either side of the brand
+   colour. It keeps ~14.8:1 against the dark chrome, comfortably past AA. */
+html[data-primary-palette],
+html:root {
+    --color-primary-h: 77 !important;
+    --color-primary-s: 100% !important;
+    --color-primary-l: 50% !important;
+    --color-primary: #b6ff00 !important;
+    --color-primary-50: hsl(77 100% 95%) !important;
+    --color-primary-100: hsl(77 100% 88%) !important;
+    --color-primary-200: hsl(77 100% 78%) !important;
+    --color-primary-300: hsl(77 100% 68%) !important;
+    --color-primary-400: hsl(77 100% 59%) !important;
+    --color-primary-500: #b6ff00 !important;
+    --color-primary-600: hsl(77 95% 42%) !important;
+    --color-primary-700: hsl(77 90% 32%) !important;
+    --color-primary-800: hsl(77 85% 22%) !important;
+    --color-primary-900: hsl(77 80% 13%) !important;
+}
+
+/* White text is unreadable on the brand lime: anything filled with it gets
+   the near-black instead. */
+.bg-primary,
+.bg-primary.text-white,
+.bg-primary .text-white,
+.bg-primary i {
+    color: #10150a !important;
+}
+
+/* Server card player-slots bar. IW4MAdmin tints it with the warning colour from
+   90% full, which after the lime retheme left it the one amber thing on the page.
+   It stays the brand lime all the way up and turns red only once the server is
+   actually full: FillPercent is a whole number capped at 100, so width:100% means
+   exactly "full" on servers this size (17 of 18 is still 94%). */
+.bg-surface-alt.overflow-hidden > .bg-warning {
+    background-color: var(--color-primary) !important;
+}
+
+/* Both spellings: Blazor writes "width:100%", but anything that sets the width
+   through the style property gets "width: 100%;" back, and a selector that only
+   knew one would quietly stop matching. */
+.bg-surface-alt.overflow-hidden > .bg-warning[style*="width:100%"],
+.bg-surface-alt.overflow-hidden > .bg-warning[style*="width: 100%"] {
+    background-color: var(--color-error) !important;
 }

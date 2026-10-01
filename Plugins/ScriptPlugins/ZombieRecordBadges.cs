@@ -25,7 +25,8 @@ using SharedLibraryCore.QueryHelper;
 /// Adds a player's zombies career to their IW4MAdmin profile: one Zombie
 /// Statistics panel carrying what they have earned (best round, records, first
 /// places, speedrun times) and how they play (kills, headshots, revives, downs),
-/// followed by live Gold, Silver and Bronze badges for high rounds,
+/// followed by live badges: the top 5 of each high-round board (Gold, Silver,
+/// Bronze, 4th, 5th, as on the stats site), and Gold, Silver and Bronze for
 /// fastest-to-round speedruns and easter egg times.
 ///
 /// The statistics and the rankings both come from the stats site's APIs and are
@@ -63,6 +64,10 @@ public sealed class ZombieRecordBadgesPlugin : IPluginV2
 }
 ";
     private const string RecordsCategory = "Zombie Records";
+
+    // A high-round board is a real top 5 of every finished game, so all five
+    // places earn a badge. Speedrun and easter egg badges stay at the podium.
+    private const int RecordPlaces = 5;
     private const string SpeedrunsCategory = "Zombie Speedruns";
     private const string EasterEggsCategory = "Easter Eggs";
 
@@ -110,7 +115,7 @@ public sealed class ZombieRecordBadgesPlugin : IPluginV2
 
     public string Name => "Zombie Record Badges";
     public string Author => "CUK Servers";
-    public string Version => "2.7.3";
+    public string Version => "2.8.0";
 
     private Task OnLoad(IManager manager, CancellationToken token)
     {
@@ -520,7 +525,7 @@ public sealed class ZombieRecordBadgesPlugin : IPluginV2
                         previousRound = entry.Round;
                     }
 
-                    if (place > 3)
+                    if (place > RecordPlaces)
                     {
                         break;
                     }
@@ -722,7 +727,10 @@ public sealed class ZombieRecordBadgesPlugin : IPluginV2
         1 => "🥇",
         2 => "🥈",
         3 => "🥉",
-        _ => "🏅"
+        // cuk-webfront.js reads the first character as the place, so 4th and
+        // 5th need glyphs of their own.
+        4 => "\U0001F396",
+        _ => "\U0001F3C5"
     };
 
     public void Dispose()

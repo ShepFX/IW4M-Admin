@@ -115,7 +115,7 @@ public sealed class ZombieRecordBadgesPlugin : IPluginV2
 
     public string Name => "Zombie Record Badges";
     public string Author => "CUK Servers";
-    public string Version => "2.8.0";
+    public string Version => "2.8.1";
 
     private Task OnLoad(IManager manager, CancellationToken token)
     {
@@ -508,14 +508,15 @@ public sealed class ZombieRecordBadgesPlugin : IPluginV2
                         .OrderByDescending(item => item.Entry.Round)
                         .ThenByDescending(item => ParseDate(item.Entry.Date))
                         .First().Entry)
+                    // A stable sort keeps the site's order among equal rounds, so
+                    // the five rows badged are the five rows the board shows.
                     .OrderByDescending(entry => entry.Round)
-                    .ThenByDescending(entry => ParseDate(entry.Date))
                     .ToList();
 
                 var previousRound = -1;
                 var place = 0;
 
-                for (var position = 0; position < rankedTeams.Count; position++)
+                for (var position = 0; position < Math.Min(rankedTeams.Count, RecordPlaces); position++)
                 {
                     var entry = rankedTeams[position];
                     if (entry.Round != previousRound)
@@ -523,11 +524,6 @@ public sealed class ZombieRecordBadgesPlugin : IPluginV2
                         // Competition ranking: equal rounds share a place (1, 1, 3).
                         place = position + 1;
                         previousRound = entry.Round;
-                    }
-
-                    if (place > RecordPlaces)
-                    {
-                        break;
                     }
 
                     var mapName = ShortMapName(map.Name);
